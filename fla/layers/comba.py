@@ -269,12 +269,12 @@ class Comba(nn.Module):
         q, k = map(lambda x: rearrange(x, '... (h d) -> ... h d', d=self.head_k_dim), (q, k))
 
         if self.use_inner_decay:
-            p = k * self.decay[None, None, :, None].sigmoid()
+            p = k * self.decay.sigmoid().to(k.dtype)[None, None, :, None]
         else:
             p = k
 
         if self.use_output_correction:
-            q = q - self.D[None, None, :, None] * p
+            q = q - self.D.to(q.dtype)[None, None, :, None] * p
 
         v = rearrange(v, '... (h d) -> ... h d', d=self.head_v_dim)
 
